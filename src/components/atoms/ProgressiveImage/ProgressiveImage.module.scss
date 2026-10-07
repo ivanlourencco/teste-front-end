@@ -1,0 +1,35 @@
+@use "abstracts" as *;
+
+.frame {
+  position: absolute;
+  inset: 0;
+  display: block;
+  overflow: hidden;
+}
+
+.placeholder {
+  position: absolute;
+  inset: 12%;
+}
+
+.image {
+  opacity: 0;
+
+  @include motion-safe {
+    transition:
+      opacity 500ms $ease-out,
+      transform 400ms $ease-out;
+  }
+
+  .frame[data-loaded] & {
+    opacity: 1;
+  }
+}
+
+.contain {
+  object-fit: contain;
+}
+
+.cover {
+  object-fit: cover;
+}
