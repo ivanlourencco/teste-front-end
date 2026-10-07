@@ -53,16 +53,18 @@ describe("ProductShowcase", () => {
   it("compra a quantidade escolhida, fecha o modal e atualiza o carrinho", async () => {
     const user = userEvent.setup()
     renderShowcase()
-    expect(screen.getByRole("link", { name: "Carrinho vazio" })).toBeInTheDocument()
+    expect(screen.getByRole("button", { name: "Carrinho vazio" })).toBeInTheDocument()
 
     await user.click(screen.getByRole("button", { name: "Comprar IPHONE 13 MINI" }))
     const dialog = await screen.findByRole("dialog")
     await user.click(within(dialog).getByRole("button", { name: "Aumentar quantidade" }))
     expect(within(dialog).getByText("02")).toBeInTheDocument()
+    expect(within(dialog).getByText("R$ 18.000,00")).toBeInTheDocument()
     await user.click(within(dialog).getByRole("button", { name: "Comprar" }))
 
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument())
-    expect(screen.getByRole("link", { name: "Carrinho, 2 itens" })).toBeInTheDocument()
+    const cart = screen.getByRole("button", { name: "Carrinho, 2 itens" })
+    expect(cart).toHaveAttribute("aria-expanded", "true")
     expect(screen.getByRole("status")).toHaveTextContent("2 unidades adicionadas ao carrinho: IPHONE 13 MINI.")
   })
 

@@ -1,6 +1,9 @@
 import type { Product } from "@/lib/catalog"
+import { ScrollToTop } from "@/components/molecules"
+import { ScrollProgress } from "@/components/motion/ScrollProgress/ScrollProgress"
 import {
   BrandList,
+  CartDrawer,
   CategoryNav,
   Footer,
   Header,
@@ -18,6 +21,7 @@ export function HomeTemplate({ products }: { products: readonly Product[] }) {
       <a href="#conteudo" className={styles.skip}>
         Pular para o conteúdo
       </a>
+      <ScrollProgress />
       <Header />
       <main id="conteudo" className={styles.main}>
         <HeroBanner />
@@ -31,6 +35,8 @@ export function HomeTemplate({ products }: { products: readonly Product[] }) {
       </main>
       <Newsletter />
       <Footer />
+      <CartDrawer />
+      <ScrollToTop />
     </>
   )
 }

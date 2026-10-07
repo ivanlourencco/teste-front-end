@@ -1,13 +1,11 @@
 "use client"
 
-import Image from "next/image"
 import { AnimatePresence, motion } from "framer-motion"
-import { useEffect, useRef, useState, type MouseEvent } from "react"
-import { Button, IconButton } from "@/components/atoms"
-import { QuantitySelector } from "@/components/molecules"
-import { useScrollLock } from "@/hooks/useScrollLock"
+import { useState, type MouseEvent } from "react"
+import { Button, IconButton, ProgressiveImage } from "@/components/atoms"
+import { AnimatedPrice, QuantitySelector } from "@/components/molecules"
+import { useModalDialog } from "@/hooks/useModalDialog"
 import type { Product } from "@/lib/catalog"
-import { formatCurrency } from "@/lib/format"
 import styles from "./ProductModal.module.scss"
 
 type ProductModalProps = {
@@ -28,25 +26,10 @@ export function ProductModal({ product, onClose, onBuy }: ProductModalProps) {
 }
 
 function ModalContent({ product, onClose, onBuy }: { product: Product } & Omit<ProductModalProps, "product">) {
-  const dialogRef = useRef<HTMLDialogElement>(null)
+  const dialogRef = useModalDialog()
   const [quantity, setQuantity] = useState(1)
-  // Lido no render, antes do commit: o autoFocus do "Fechar" já roubaria o foco no effect.
-  const [trigger] = useState(() => document.activeElement as HTMLElement | null)
   const titleId = `modal-title-${product.id}`
   const descriptionId = `modal-description-${product.id}`
-
-  useScrollLock(true)
-
-  useEffect(() => {
-    const dialog = dialogRef.current
-    if (!dialog) return
-    if (!dialog.open) dialog.showModal()
-    return () => {
-      if (dialog.open) dialog.close()
-      // Devolve o foco a quem abriu o modal (o dialog sai do DOM antes do close nativo agir).
-      trigger?.focus({ preventScroll: true })
-    }
-  }, [trigger])
 
   function handleBackdropClick(event: MouseEvent<HTMLDivElement>) {
     if (event.target === event.currentTarget) onClose()
@@ -89,15 +72,23 @@ function ModalContent({ product, onClose, onBuy }: { product: Product } & Omit<P
             autoFocus
           />
 
-          <div className={styles.media}>
-            <Image src={product.photo} alt={product.name} fill sizes="(max-width: 768px) 60vw, 247px" className={styles.image} />
-          </div>
+          <motion.div
+            className={styles.media}
+            initial={{ opacity: 0, x: -16 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.1, duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <ProgressiveImage src={product.photo} alt={product.name} sizes="(max-width: 768px) 60vw, 247px" fit="contain" />
+          </motion.div>
 
           <div className={styles.info}>
             <h2 id={titleId} className={styles.title}>
               {product.name}
             </h2>
-            <p className={styles.price}>{formatCurrency(product.price)}</p>
+            {/* O total acompanha a quantidade girando os dígitos (padrão do ij-ecommerce). */}
+            <p className={styles.price}>
+              <AnimatedPrice value={product.price * quantity} fontSize={20} />
+            </p>
 
             <p id={descriptionId} className={styles.description}>
               {product.description}

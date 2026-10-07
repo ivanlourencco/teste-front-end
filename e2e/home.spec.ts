@@ -39,7 +39,7 @@ test.describe("Home", () => {
     await expect(dialog).toBeHidden()
   })
 
-  test("compra pelo modal e atualiza o carrinho", async ({ page }) => {
+  test("compra pelo modal, abre o carrinho e atualiza o badge", async ({ page }) => {
     await page.locator("#ofertas").getByRole("article").first().getByRole("button", { name: /^Comprar / }).click()
 
     const dialog = page.getByRole("dialog")
@@ -48,9 +48,16 @@ test.describe("Home", () => {
     await expect(dialog.getByText("03")).toBeVisible()
     await dialog.getByRole("button", { name: "Comprar", exact: true }).click()
 
-    await expect(dialog).toBeHidden()
-    await expect(page.getByRole("link", { name: "Carrinho, 3 itens" })).toBeVisible()
+    const cart = page.getByRole("dialog", { name: "Carrinho" })
+    await expect(cart).toBeVisible()
+    await expect(cart.getByText("Você ganhou frete grátis!")).toBeVisible()
     await expect(page.getByTestId("cart-count")).toHaveText("3")
+
+    await cart.getByRole("button", { name: /^Remover / }).click()
+    await expect(cart.getByText("Nada por aqui ainda")).toBeVisible()
+    await page.keyboard.press("Escape")
+    await expect(cart).toBeHidden()
+    await expect(page.getByRole("button", { name: "Carrinho vazio" })).toBeFocused()
   })
 
   test("troca de aba filtra a vitrine", async ({ page }) => {

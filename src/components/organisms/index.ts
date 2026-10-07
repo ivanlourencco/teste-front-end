@@ -1,4 +1,5 @@
 export { BrandList } from "./BrandList/BrandList"
+export { CartDrawer } from "./CartDrawer/CartDrawer"
 export { CategoryNav } from "./CategoryNav/CategoryNav"
 export { Footer } from "./Footer/Footer"
 export { Header } from "./Header/Header"

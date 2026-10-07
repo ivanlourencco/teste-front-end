@@ -1,9 +1,15 @@
 @use "abstracts" as *;
 
 .header {
-  position: relative;
+  position: sticky;
+  top: 0;
   z-index: $z-header;
   background: $color-white;
+  transition: box-shadow $duration-base ease;
+
+  &[data-elevated] {
+    box-shadow: 0 6px 24px rgb(0 0 0 / 8%);
+  }
 }
 
 // O header do Figma vive dentro do container de 1280 (linhas e sombra também).
@@ -80,6 +86,7 @@
 }
 
 .action {
+  @include reset-button;
   @include focus-ring;
 
   position: relative;
@@ -97,6 +104,11 @@
       transform: translateY(-2px);
     }
   }
+}
+
+.cartIcon {
+  display: grid;
+  place-items: center;
 }
 
 .badge {

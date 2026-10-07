@@ -41,13 +41,13 @@ Na primeira vez que for rodar o E2E, instale o navegador com `npx playwright ins
 src/
 ├── app/                 # layout (fontes, SEO, providers), page (busca no servidor), robots, sitemap
 ├── components/
-│   ├── atoms/           # Button, IconButton, Icon, Logo, TextField, Checkbox
-│   ├── molecules/       # ProductCard, ProductPrice, CategoryTabs, QuantitySelector, SearchBar...
-│   ├── organisms/       # Header, HeroBanner, ProductShowcase, ProductCarousel, ProductModal, Newsletter, Footer...
+│   ├── atoms/           # Button, IconButton, Icon, Logo, TextField, Checkbox, Skeleton, ProgressiveImage
+│   ├── molecules/       # ProductCard, CartItem, AnimatedPrice, CategoryTabs, QuantitySelector, EmptyState...
+│   ├── organisms/       # Header, HeroBanner, ProductShowcase, ProductCarousel, ProductModal, CartDrawer, Newsletter, Footer...
 │   ├── templates/       # HomeTemplate: ordem e ritmo das seções
-│   └── motion/          # Reveal (entrada ao rolar)
+│   └── motion/          # Reveal, StaggerList, AnimatedCounter, ScrollProgress
 ├── content/             # textos/links estáticos da home (fora dos componentes)
-├── hooks/               # useCarousel, useNewsletterForm, useScrollLock
+├── hooks/               # useCarousel, useNewsletterForm, useModalDialog, useScrollLock
 ├── lib/                 # domínio puro e testável: catalog, format, validation, seo
 ├── providers/           # CartProvider (useReducer + context) e MotionConfig
 ├── services/            # getProducts(): fetch + validação do JSON
@@ -64,9 +64,22 @@ Os componentes seguem **Atomic Design**. Cada um tem a própria pasta, com `.tsx
 - **Preço.** `price` é interpretado como reais (15000 → R$ 15.000,00). O parcelamento usa 2x sem juros, como no layout, e arredonda para baixo. O preço "de" (riscado) só aparece se existir: o JSON não traz esse valor, e inventar preço seria pior do que omitir a linha. A altura do card é preservada.
 - **Modal.** Usa o `<dialog>` nativo com `showModal()`, o que dá top layer, foco preso e o resto da página inerte sem biblioteca. Fecha com Esc, com clique fora e no X, e devolve o foco a quem abriu. O Framer Motion anima a entrada e a saída.
 - **Carrossel.** É scroll nativo com `scroll-snap`, então swipe e inércia vêm do navegador. As setas avançam uma página e desabilitam nas pontas. Um `IntersectionObserver` tira a sombra dos cards fora da janela, para ela não "vazar" na borda.
-- **Carrinho.** O botão Comprar do modal adiciona a quantidade escolhida. O badge do header atualiza, e um `aria-live` anuncia a adição para leitores de tela.
+- **Carrinho.** O Comprar do modal adiciona a quantidade escolhida e abre a gaveta do carrinho, que permite alterar quantidade, remover itens e mostra o subtotal e quanto falta para o frete grátis (acima de R$ 200). O badge do header atualiza, e um `aria-live` anuncia cada mudança para leitores de tela. A gaveta usa o mesmo hook de `<dialog>` do modal (`useModalDialog`).
 - **Pixel perfect.** As medidas, cores, fontes (Poppins, Work Sans, Outfit), sombras e degradês vêm da API do Figma e estão em `styles/abstracts/_tokens.scss`. Em 1440 px, a página tem a mesma altura do frame Home (4660 px).
-- **Animações.** Entrada do hero em sequência, seções aparecendo ao rolar, troca de aba com transição, indicador de aba deslizante e hovers nos cards, categorias e marcas. Tudo respeita `prefers-reduced-motion`.
+- **Animações.** Entrada do hero em sequência com zoom na imagem, barra de progresso de leitura, header que some ao rolar para baixo e volta ao subir, categorias e marcas entrando em cascata, cards da vitrine em cascata na troca de aba, indicador de aba deslizante, brilho nos botões, imagens com fade sobre skeleton, preço com dígitos em rolo no modal e no carrinho, ícone do carrinho "pulando" a cada item e gaveta deslizante. Tudo respeita `prefers-reduced-motion`.
+
+### Componentes reaproveitados
+
+Alguns componentes vieram de projetos meus (ij-ecommerce e ij-web) e foram reescritos em SCSS Modules, sem Tailwind nem bibliotecas de UI, para seguir a regra do teste:
+
+| Aqui | Origem |
+| --- | --- |
+| `motion/AnimatedCounter`, `molecules/AnimatedPrice` | `AnimatedCounter` e `AnimatedCurrency` (dígitos em rolo com mola) |
+| `atoms/ProgressiveImage`, `atoms/Skeleton` | `ProgressiveImage` e `Shimmer` (fade da imagem sobre o skeleton) |
+| `organisms/CartDrawer`, `molecules/CartItem` | `CartDrawer` e `CartItemRow` (gaveta, linha e subtotal) |
+| `molecules/EmptyState` | `EmptyState` (medalhão + texto + ação) |
+| `molecules/ScrollToTop` | `ScrollToTopButton` |
+| `molecules/QuantitySelector`, `lib/format` | `QuantityInput` e formatação de moeda |
 
 ### Acessibilidade e SEO
 

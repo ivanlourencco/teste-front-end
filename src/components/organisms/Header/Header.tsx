@@ -3,11 +3,12 @@ import { Icon, Logo } from "@/components/atoms"
 import { BenefitItem, SearchBar } from "@/components/molecules"
 import { BENEFITS, MAIN_NAV } from "@/content/home"
 import { CartLink } from "./CartLink"
+import { HeaderShell } from "./HeaderShell"
 import styles from "./Header.module.scss"
 
 export function Header() {
   return (
-    <header className={styles.header}>
+    <HeaderShell>
       <div className={styles.inner}>
         <ul className={styles.benefits} aria-label="Vantagens da loja">
           {BENEFITS.map((benefit) => (
@@ -53,6 +54,6 @@ export function Header() {
           </ul>
         </nav>
       </div>
-    </header>
+    </HeaderShell>
   )
 }

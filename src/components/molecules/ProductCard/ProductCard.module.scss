@@ -40,8 +40,6 @@
 }
 
 .image {
-  object-fit: contain;
-
   @include motion-safe {
     transition: transform 400ms $ease-out;
   }

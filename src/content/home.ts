@@ -4,6 +4,8 @@ import type { IconName } from "@/components/atoms/Icon/icons"
 
 export type Benefit = { icon: IconName; lead: string; highlight: string; trail: string }
 
+export const FREE_SHIPPING_FROM = 200
+
 export const BENEFITS: readonly Benefit[] = [
   { icon: "shield", lead: "Compra ", highlight: "100% segura", trail: "" },
   { icon: "truck", lead: "", highlight: "Frete grátis", trail: " acima de R$ 200" },

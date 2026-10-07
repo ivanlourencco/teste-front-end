@@ -4,9 +4,12 @@
   @include reset-button;
   @include focus-ring;
 
+  position: relative;
+  isolation: isolate;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
   text-align: center;
   text-transform: uppercase;
   white-space: nowrap;
@@ -22,6 +25,26 @@
   &:disabled {
     cursor: not-allowed;
     opacity: 0.6;
+  }
+
+  // Brilho que atravessa o botão no hover.
+  &::after {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    content: "";
+    background: linear-gradient(110deg, transparent 30%, rgb(255 255 255 / 35%) 50%, transparent 70%);
+    transform: translateX(-120%);
+  }
+
+  @include motion-safe {
+    @media (hover: hover) {
+      &:hover:not(:disabled)::after {
+        transform: translateX(120%);
+        transition: transform 700ms $ease-out;
+      }
+    }
   }
 }
 

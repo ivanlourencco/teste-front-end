@@ -1,11 +1,23 @@
 "use client"
 
-import { AnimatePresence, motion } from "framer-motion"
+import { AnimatePresence, motion, type Variants } from "framer-motion"
 import { IconButton } from "@/components/atoms"
-import { ProductCard } from "@/components/molecules"
+import { EmptyState, ProductCard } from "@/components/molecules"
 import { useCarousel } from "@/hooks/useCarousel"
 import type { Product } from "@/lib/catalog"
 import styles from "./ProductCarousel.module.scss"
+
+// Troca de aba: a lista sai para a esquerda e os cards entram em cascata.
+const list: Variants = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.07 } },
+  exit: { opacity: 0, x: -24, transition: { duration: 0.2 } },
+}
+
+const slide: Variants = {
+  hidden: { opacity: 0, y: 24, scale: 0.97 },
+  visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.45, ease: [0.22, 1, 0.36, 1] } },
+}
 
 type ProductCarouselProps = {
   products: readonly Product[]
@@ -22,9 +34,12 @@ export function ProductCarousel({ products, onSelect, listKey, label, priority =
 
   if (products.length === 0) {
     return (
-      <p className={styles.empty} role="status">
-        Nenhum produto encontrado nesta categoria.
-      </p>
+      <EmptyState
+        icon="search"
+        title="Nenhum produto encontrado nesta categoria."
+        description="Experimente outra aba ou veja todos os produtos."
+        className={styles.empty}
+      />
     )
   }
 
@@ -47,15 +62,15 @@ export function ProductCarousel({ products, onSelect, listKey, label, priority =
           ref={trackRef}
           className={styles.track}
           aria-label={label}
-          initial={{ opacity: 0, x: 24 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -24 }}
-          transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+          variants={list}
+          initial="hidden"
+          animate="visible"
+          exit="exit"
         >
           {products.map((product, index) => (
-            <li key={product.id} className={styles.slide}>
+            <motion.li key={product.id} className={styles.slide} variants={slide}>
               <ProductCard product={product} onSelect={onSelect} priority={priority && index < 4} />
-            </li>
+            </motion.li>
           ))}
         </motion.ul>
       </AnimatePresence>

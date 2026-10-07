@@ -1,7 +1,6 @@
-import Image from "next/image"
 import { clsx } from "clsx"
 import type { Product } from "@/lib/catalog"
-import { Button } from "@/components/atoms"
+import { Button, ProgressiveImage } from "@/components/atoms"
 import { ProductPrice } from "../ProductPrice/ProductPrice"
 import styles from "./ProductCard.module.scss"
 
@@ -19,12 +18,12 @@ export function ProductCard({ product, onSelect, priority = false, className }: 
   return (
     <article className={clsx(styles.card, className)} aria-label={product.name}>
       <div className={styles.media}>
-        <Image
+        <ProgressiveImage
           src={product.photo}
           alt=""
-          fill
           sizes="(max-width: 520px) 70vw, (max-width: 1024px) 40vw, 278px"
           className={styles.image}
+          fit="contain"
           priority={priority}
         />
       </div>
