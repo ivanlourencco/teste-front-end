@@ -19,9 +19,11 @@ export function HeaderShell({ children }: { children: ReactNode }) {
   const [elevated, setElevated] = useState(false)
 
   useMotionValueEvent(scrollY, "change", (latest) => {
-    const previous = scrollY.getPrevious() ?? 0
+    const delta = latest - (scrollY.getPrevious() ?? 0)
     setElevated(latest > 8)
-    setHidden(!reduceMotion && latest > HIDE_AFTER && latest > previous)
+    // Ignora micro-rolagens (trackpad) para o header não ficar piscando.
+    if (Math.abs(delta) < 6) return
+    setHidden(!reduceMotion && latest > HIDE_AFTER && delta > 0)
   })
 
   return (

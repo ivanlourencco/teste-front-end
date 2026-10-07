@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event"
 import { CartLink } from "@/components/organisms/Header/CartLink"
 import type { Product } from "@/lib/catalog"
 import { CartProvider } from "@/providers/CartProvider"
+import { SearchProvider, useSearch } from "@/providers/SearchProvider"
 import { ProductShowcase } from "./ProductShowcase"
 
 const photo = "https://app.econverse.com.br/teste-front-end/junior/tecnologia/fotos-produtos/foto-iphone.png"
@@ -12,16 +13,47 @@ const products: Product[] = [
   { id: "b", name: "Capa iPhone", description: "Capa de silicone", photo, price: 50, category: "acessorios" },
 ]
 
+function SearchInput() {
+  const { query, setQuery } = useSearch()
+  return <input aria-label="Buscar" value={query} onChange={(event) => setQuery(event.target.value)} />
+}
+
 function renderShowcase() {
   return render(
-    <CartProvider>
-      <CartLink />
-      <ProductShowcase products={products} withTabs />
-    </CartProvider>,
+    <SearchProvider>
+      <CartProvider>
+        <SearchInput />
+        <CartLink />
+        <ProductShowcase products={products} withTabs searchable />
+      </CartProvider>
+    </SearchProvider>,
   )
 }
 
 describe("ProductShowcase", () => {
+  it("mostra os resultados da busca no lugar das abas e limpa", async () => {
+    const user = userEvent.setup()
+    renderShowcase()
+
+    await user.type(screen.getByRole("textbox", { name: "Buscar" }), "capa")
+    expect(await screen.findByText(/1 resultado para/)).toBeInTheDocument()
+    expect(screen.queryByRole("tablist")).not.toBeInTheDocument()
+    expect(await screen.findByRole("heading", { name: "Capa iPhone" })).toBeInTheDocument()
+    await waitFor(() => expect(screen.queryByRole("heading", { name: "IPHONE 13 MINI" })).not.toBeInTheDocument())
+
+    await user.click(screen.getByRole("button", { name: "Limpar busca" }))
+    expect(await screen.findByRole("tablist")).toBeInTheDocument()
+  })
+
+  it("sem resultado exato sugere produtos parecidos", async () => {
+    const user = userEvent.setup()
+    renderShowcase()
+
+    await user.type(screen.getByRole("textbox", { name: "Buscar" }), "iphone 15")
+    expect(await screen.findByText(/Nenhum resultado exato/)).toBeInTheDocument()
+    await waitFor(() => expect(screen.getAllByRole("article")).toHaveLength(2))
+  })
+
   it("filtra a vitrine pela aba ativa e mostra estado vazio", async () => {
     const user = userEvent.setup()
     renderShowcase()

@@ -44,14 +44,9 @@ $gap: 18px;
   flex: 0 0 calc((100% - #{$gap * 3}) / 4);
   scroll-snap-align: start;
 
-  > * {
-    transition:
-      box-shadow $duration-base ease,
-      transform $duration-base $ease-out;
-  }
-
-  &[data-in-view="false"] > * {
-    box-shadow: none;
+  // Fora da janela a sombra some (só opacidade; ver ProductCard).
+  &[data-in-view="false"] {
+    --card-shadow: 0;
   }
 
   @include below("md") {
