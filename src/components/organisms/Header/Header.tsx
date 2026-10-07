@@ -1,7 +1,7 @@
 import { clsx } from "clsx"
 import { Icon, Logo } from "@/components/atoms"
 import { BenefitItem, SearchBar } from "@/components/molecules"
-import { BENEFITS, MAIN_NAV } from "@/content/home"
+import { BENEFITS, MAIN_NAV, SEARCH_RESULTS_ID } from "@/content/home"
 import { CartLink } from "./CartLink"
 import { HeaderShell } from "./HeaderShell"
 import styles from "./Header.module.scss"
@@ -18,7 +18,7 @@ export function Header() {
 
         <div className={styles.main}>
           <Logo priority />
-          <SearchBar className={styles.search} />
+          <SearchBar resultsId={SEARCH_RESULTS_ID} className={styles.search} />
           <ul className={styles.actions}>
             <li>
               <a href="#" className={styles.action} aria-label="Meus pedidos">

@@ -3,11 +3,10 @@
 import { AnimatePresence, motion } from "framer-motion"
 import { type MouseEvent } from "react"
 import { Button, IconButton } from "@/components/atoms"
-import { AnimatedPrice, CartItem, EmptyState } from "@/components/molecules"
+import { AnimatedPrice, CartItem, EmptyState, FreeShippingProgress } from "@/components/molecules"
 import { AnimatedCounter } from "@/components/motion/AnimatedCounter/AnimatedCounter"
 import { useModalDialog } from "@/hooks/useModalDialog"
 import { FREE_SHIPPING_FROM } from "@/content/home"
-import { formatCurrency } from "@/lib/format"
 import { useCart } from "@/providers/CartProvider"
 import styles from "./CartDrawer.module.scss"
 
@@ -25,8 +24,6 @@ export function CartDrawer() {
 function DrawerContent({ onClose }: { onClose: () => void }) {
   const dialogRef = useModalDialog(CART_BUTTON_ID)
   const { lines, count, subtotal, updateItem, removeItem } = useCart()
-  const missing = Math.max(0, FREE_SHIPPING_FROM - subtotal)
-  const progress = Math.min(100, (subtotal / FREE_SHIPPING_FROM) * 100)
 
   function handleBackdrop(event: MouseEvent<HTMLDivElement>) {
     if (event.target === event.currentTarget) onClose()
@@ -90,25 +87,7 @@ function DrawerContent({ onClose }: { onClose: () => void }) {
             />
           ) : (
             <>
-              <div className={styles.shipping} aria-live="polite">
-                <p>
-                  {missing > 0 ? (
-                    <>
-                      Faltam <strong>{formatCurrency(missing)}</strong> para o frete grátis
-                    </>
-                  ) : (
-                    <strong>Você ganhou frete grátis!</strong>
-                  )}
-                </p>
-                <span className={styles.track} aria-hidden="true">
-                  <motion.span
-                    className={styles.bar}
-                    initial={false}
-                    animate={{ scaleX: progress / 100 }}
-                    transition={{ duration: 0.6, ease }}
-                  />
-                </span>
-              </div>
+              <FreeShippingProgress subtotal={subtotal} threshold={FREE_SHIPPING_FROM} />
 
               <ul className={styles.list}>
                 <AnimatePresence initial={false}>

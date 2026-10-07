@@ -25,10 +25,18 @@ type ProductCarouselProps = {
   /** Muda a cada troca de aba: reinicia o scroll e reanima os cards. */
   listKey: string
   label: string
+  emptyTitle?: string
   priority?: boolean
 }
 
-export function ProductCarousel({ products, onSelect, listKey, label, priority = false }: ProductCarouselProps) {
+export function ProductCarousel({
+  products,
+  onSelect,
+  listKey,
+  label,
+  emptyTitle = "Nenhum produto encontrado nesta categoria.",
+  priority = false,
+}: ProductCarouselProps) {
   // A lista é remontada a cada aba (key), então o scroll já volta ao início.
   const { trackRef, canPrev, canNext, prev, next } = useCarousel<HTMLUListElement>()
 
@@ -36,7 +44,7 @@ export function ProductCarousel({ products, onSelect, listKey, label, priority =
     return (
       <EmptyState
         icon="search"
-        title="Nenhum produto encontrado nesta categoria."
+        title={emptyTitle}
         description="Experimente outra aba ou veja todos os produtos."
         className={styles.empty}
       />
