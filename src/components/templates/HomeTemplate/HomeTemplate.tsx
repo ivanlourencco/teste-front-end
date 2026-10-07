@@ -1,4 +1,5 @@
 import type { Product } from "@/lib/catalog"
+import { SEARCH_RESULTS_ID } from "@/content/home"
 import { ScrollToTop } from "@/components/molecules"
 import { ScrollProgress } from "@/components/motion/ScrollProgress/ScrollProgress"
 import {
@@ -26,7 +27,7 @@ export function HomeTemplate({ products }: { products: readonly Product[] }) {
       <main id="conteudo" className={styles.main}>
         <HeroBanner />
         <CategoryNav />
-        <ProductShowcase id="ofertas" products={products} withTabs priority />
+        <ProductShowcase id={SEARCH_RESULTS_ID} products={products} withTabs searchable priority />
         <PartnerBanners id="parceiros-1" />
         <ProductShowcase products={products} />
         <PartnerBanners id="parceiros-2" />

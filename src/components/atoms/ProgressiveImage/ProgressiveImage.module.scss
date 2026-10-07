@@ -16,14 +16,23 @@
   opacity: 0;
 
   @include motion-safe {
-    transition:
-      opacity 500ms $ease-out,
-      transform 400ms $ease-out;
+    transition: opacity 400ms $ease-out;
   }
 
-  .frame[data-loaded] & {
+  &[data-loaded] {
     opacity: 1;
   }
+
+  // Carregou: o skeleton sai (sem JS re-renderizando).
+  &[data-loaded] + .placeholder {
+    display: none;
+  }
+}
+
+// Prioritárias aparecem assim que pintam, antes mesmo da hidratação.
+.eager {
+  opacity: 1;
+  transition: none;
 }
 
 .contain {

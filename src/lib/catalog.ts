@@ -84,3 +84,39 @@ export function parseProducts(payload: unknown): Product[] {
 export function filterByCategory(products: readonly Product[], tab: CategoryTab["id"]): Product[] {
   return tab === "todos" ? [...products] : products.filter((product) => product.category === tab)
 }
+
+const normalize = (text: string) =>
+  text
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+
+const CATEGORY_LABEL = Object.fromEntries(CATEGORY_TABS.map((tab) => [tab.id, tab.label])) as Record<string, string>
+
+export type SearchResult = {
+  /** Produtos com todos os termos ("iphone 13" não traz o iPhone 11). */
+  matches: Product[]
+  /** Sem resultado exato: produtos com algum dos termos, para não deixar a busca vazia. */
+  related: Product[]
+}
+
+/**
+ * Busca no nome, na descrição e na categoria ("celular" acha os iPhones),
+ * sem acento e sem diferenciar maiúsculas.
+ */
+export function searchProducts(products: readonly Product[], query: string): SearchResult {
+  const terms = normalize(query).split(/\s+/).filter(Boolean)
+  if (terms.length === 0) return { matches: [...products], related: [] }
+
+  const indexed = products.map((product) => ({
+    product,
+    text: normalize(`${product.name} ${product.description} ${CATEGORY_LABEL[product.category ?? ""] ?? ""}`),
+  }))
+  const matches = indexed.filter(({ text }) => terms.every((term) => text.includes(term))).map(({ product }) => product)
+  const related =
+    matches.length > 0
+      ? []
+      : indexed.filter(({ text }) => terms.some((term) => text.includes(term))).map(({ product }) => product)
+
+  return { matches, related }
+}

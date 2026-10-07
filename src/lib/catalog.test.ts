@@ -1,4 +1,4 @@
-import { filterByCategory, inferCategory, isApiProduct, parseProducts } from "./catalog"
+import { filterByCategory, inferCategory, isApiProduct, parseProducts, searchProducts } from "./catalog"
 
 const raw = {
   success: true,
@@ -68,5 +68,28 @@ describe("filterByCategory", () => {
   it("filtra pela categoria inferida", () => {
     expect(filterByCategory(products, "acessorios").map((product) => product.name)).toEqual(["Capa para iPhone"])
     expect(filterByCategory(products, "tvs")).toEqual([])
+  })
+})
+
+describe("searchProducts", () => {
+  const products = parseProducts(raw)
+  const names = (list: { name: string }[]) => list.map((product) => product.name)
+
+  it("acha por nome sem diferenciar acento e maiúsculas", () => {
+    expect(names(searchProducts(products, "  MACBOOK  ").matches)).toEqual(["MacBook Air"])
+  })
+
+  it("acha pela categoria", () => {
+    expect(names(searchProducts(products, "celular").matches)).toEqual(["Iphone 11 PRO MAX BRANCO 1"])
+  })
+
+  it("exige todos os termos e sugere parecidos quando não há resultado exato", () => {
+    const result = searchProducts(products, "iphone 13")
+    expect(result.matches).toEqual([])
+    expect(names(result.related)).toEqual(["Iphone 11 PRO MAX BRANCO 1", "Capa para iPhone"])
+  })
+
+  it("busca vazia devolve tudo", () => {
+    expect(searchProducts(products, " ").matches).toHaveLength(3)
   })
 })

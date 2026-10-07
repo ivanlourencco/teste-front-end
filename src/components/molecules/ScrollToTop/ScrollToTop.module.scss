@@ -14,13 +14,12 @@
   height: 44px;
   color: $color-primary;
   pointer-events: none;
-  background: rgb(255 255 255 / 92%);
+  background: $color-white;
   border: 1px solid $color-line;
   border-radius: 50%;
   box-shadow: 0 8px 24px rgb(0 0 0 / 12%);
   opacity: 0;
   transform: translateY(12px);
-  backdrop-filter: blur(8px);
   transition:
     opacity $duration-base $ease-out,
     transform $duration-base $ease-out,

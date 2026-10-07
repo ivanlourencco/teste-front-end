@@ -60,6 +60,21 @@ test.describe("Home", () => {
     await expect(page.getByRole("button", { name: "Carrinho vazio" })).toBeFocused()
   })
 
+  test("busca pelo header filtra a vitrine", async ({ page }) => {
+    const showcase = page.locator("#ofertas")
+    await page.getByRole("searchbox", { name: "Buscar produtos" }).fill("iphone")
+    await page.keyboard.press("Enter")
+
+    await expect(showcase.getByText(/resultados? para/)).toBeVisible()
+    await expect(showcase.getByRole("article").first()).toBeVisible()
+
+    await page.getByRole("searchbox", { name: "Buscar produtos" }).fill("geladeira")
+    await expect(showcase.getByText("Nenhum produto encontrado para “geladeira”.")).toBeVisible()
+
+    await showcase.getByRole("button", { name: "Limpar busca" }).click()
+    await expect(showcase.getByRole("tablist")).toBeVisible()
+  })
+
   test("troca de aba filtra a vitrine", async ({ page }) => {
     const showcase = page.locator("#ofertas")
     await expect(showcase.getByRole("article").first()).toBeVisible()

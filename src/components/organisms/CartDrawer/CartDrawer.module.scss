@@ -24,7 +24,6 @@
   width: 100%;
   height: 100%;
   background: $color-overlay;
-  backdrop-filter: blur(2px);
 }
 
 .panel {
@@ -72,35 +71,6 @@
 
 .empty {
   margin-block: auto;
-}
-
-.shipping {
-  @include text(12px, 18px);
-
-  padding: 16px 24px;
-  color: $color-text;
-  background: $color-surface-muted;
-
-  strong {
-    color: $color-primary;
-  }
-}
-
-.track {
-  display: block;
-  height: 4px;
-  margin-top: 8px;
-  overflow: hidden;
-  background: $color-line;
-  border-radius: 2px;
-}
-
-.bar {
-  display: block;
-  height: 100%;
-  background: $color-primary;
-  border-radius: inherit;
-  transform-origin: left;
 }
 
 .list {
